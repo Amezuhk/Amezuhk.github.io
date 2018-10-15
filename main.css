@@ -1,0 +1,11 @@
+
+.hell { 
+    display: block;
+    color: red;
+    height: 500px;
+    width: 500px;
+    allign:center;
+    border: 5px solid blue;
+    background-color: lightgreen;
+    opacity: 0.5
+}
