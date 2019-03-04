@@ -1,0 +1,14 @@
+<Level>    
+    <EndOfWorld value="430"/>
+    <Block Type="1" PosX="40" PosY="3" Width="80" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" />  
+    <Block Type="1" PosX="130" PosY="30" Width="40" Height="6" Rotation="0" Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="120" PosY="3" Width="80" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" />  
+    <Block Type="1" PosX="200" PosY="3" Width="20" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="230" PosY="25" Width="20" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="260" PosY="3" Width="20" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="300" PosY="25" Width="25" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="340" PosY="45" Width="20" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="1" PosX="440" PosY="3" Width="80" Height="6" Rotation="0"  Color="0.9 0.8 0.8 1" /> 
+    <Block Type="2" PosX="420" PosY="6" Width="3" Height="10" Rotation="0"  Color="0.8 0.8 0.8 1" /> 
+    <Block Type="2" PosX="423" PosY="6" Width="3" Height="10" Rotation="0"  Color="0.8 0.8 0.8 1" /> 
+</Level>
