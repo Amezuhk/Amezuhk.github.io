@@ -13,8 +13,6 @@ function LevelRenderable() {
     this.mRightEdge = null;
     
     Renderable.call(this);
-    Renderable.prototype._setShader.call(this, gEngine.DefaultResources.getLightShader());
-    this.mLights = [];
 }
 gEngine.Core.inheritPrototype(LevelRenderable, Renderable);
 
@@ -23,7 +21,6 @@ LevelRenderable.prototype.draw = function (aCamera) {
     var gl = gEngine.Core.getGL();
     this.mShader.activateShader(this.mColor, aCamera);  // always activate the shader first!
     this.mShader.loadObjectTransform(this.mXform.getXform());
-    this.mShader.setLights(this.mLights);
     
     var start = gEngine.VertexBuffer.getShapeBufferStart(this.mShapeType);
     var count = gEngine.VertexBuffer.getShapeVerticesCount(this.mShapeType);
@@ -47,8 +44,4 @@ LevelRenderable.prototype.getBBox = function(){
     var xform = this.getXform();
     var b = new BoundingBox(xform.getPosition(),xform.getWidth(), xform.getHeight());
     return b;
-};
-
-LevelRenderable.prototype.addLight = function (l) {
-    this.mLights.push(l);
 };
