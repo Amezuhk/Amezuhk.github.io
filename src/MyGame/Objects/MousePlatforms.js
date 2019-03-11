@@ -20,8 +20,8 @@ MousePlatforms.prototype.update = function(player){
             this.incPlats();
             var n = this.mGlobalLightSet.getLightAt(3).getNear();
             var f = this.mGlobalLightSet.getLightAt(3).getFar();
-            this.mGlobalLightSet.getLightAt(3).setFar(f + 2);
-            this.mGlobalLightSet.getLightAt(3).setNear(n + 2);
+            this.mGlobalLightSet.getLightAt(3).setFar(f + 5);
+            this.mGlobalLightSet.getLightAt(3).setNear(n + 5);
             break;
         }
     }
