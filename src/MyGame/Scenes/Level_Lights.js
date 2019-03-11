@@ -51,12 +51,12 @@ Level.prototype._initializeLights = function () {
     this.mGlobalLightSet.addToSet(l);
 
     l = this._createALight(Light.eLightType.eSpotLight,
-            [80, 18, 3],            // End of Level Right
-            [-0.07,  0, -1],     // direction
+            [15, 6, 1],            // End of Level Right
+            [0,  .08, -1],     // direction
             [0.5, 0.5, 0.5, 1],     // color
-            50, 50,                  // near and far distances
+            20, 30,                  // near and far distances
             1.65, 1.7,               // inner outter angles (in radius)
-            5,                     // intensity
+            1,                     // intensity
             1.2                     // drop off
             );
     this.mGlobalLightSet.addToSet(l);

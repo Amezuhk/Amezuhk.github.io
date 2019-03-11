@@ -25,6 +25,10 @@ function Level(sceneFile, bgClip, cue) {
     this.kViewportHeight = 750;
     this.mMouse = null;
     this.mCamera = null;   
+    
+    this.r = 0.0;
+    this.g = 0.0;
+    this.b = 0.0;
 }
 gEngine.Core.inheritPrototype(Level, Scene);
 
@@ -138,7 +142,20 @@ Level.prototype.update = function () {
    this.mGlobalLightSet.getLightAt(0).setXPos(plX.getXPos());
    this.mGlobalLightSet.getLightAt(0).setYPos(plX.getYPos());
    
-   this.mGlobalLightSet.getLightAt(2).setXPos(450);
+   this.mGlobalLightSet.getLightAt(2).setXPos(445);
+   this.r++;
+   this.b++;
+   this.g++;
+   this.mGlobalLightSet.getLightAt(2).setColor([this.r,this.g,this.b,1]);
+   if(this.r > 9) {
+       this.r = 0;
+   }
+      if(this.g > 9) {
+       this.g = 0;
+   }
+      if(this.b > 9) {
+       this.b = 0;
+   }
    this.mGhost.rotateObjPointTo(pl.getXform().getPosition(),0.5);
    this.mGhost.update();
    var stop = pl.isAlive(this.mSpikes,wx,wy,440,this.mGhost);
