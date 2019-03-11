@@ -29,7 +29,7 @@ Level.prototype._initializeLights = function () {
     this.mGlobalLightSet = new LightSet();
 
     var l = this._createALight(Light.eLightType.ePointLight,
-            [50, 40, 6],         // PlayerPointLight
+            [50, 40, 8],         // PlayerPointLight
             [0, 0, -1],          // Direction 
             [1.0, .6, 0.1, 1],  // some color
             8, 20,               // near and far distances
