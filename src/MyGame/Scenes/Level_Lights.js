@@ -32,9 +32,9 @@ Level.prototype._initializeLights = function () {
             [50, 40, 5],         // PlayerPointLight
             [0, 0, -1],          // Direction 
             [1.0, .5, 0.1, 1],  // some color
-            6, 14,               // near and far distances
+            8, 20,               // near and far distances
             0.1, 0.2,            // inner and outer cones
-            5,                   // intensity
+            2,                   // intensity
             1.0                  // drop off
             );
     this.mGlobalLightSet.addToSet(l);
