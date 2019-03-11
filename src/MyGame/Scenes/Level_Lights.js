@@ -32,7 +32,7 @@ Level.prototype._initializeLights = function () {
             [50, 40, 5],         // PlayerPointLight
             [0, 0, -1],          // Direction 
             [0, .6, 0.1, 1],  // some color
-            10, 24,               // near and far distances
+            6, 16,               // near and far distances
             0.1, 0.2,            // inner and outer cones
             2,                   // intensity
             1.0                  // drop off
