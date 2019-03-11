@@ -156,6 +156,9 @@ Level.prototype.update = function () {
       if(this.b > 9) {
        this.b = 0;
    }
+   
+   this.mGlobalLightSet.getLightAt(3).setXPos(wc[0] - (w/2) + 3);
+   this.mGlobalLightSet.getLightAt(3).setYPos(wc[1] + (h/2) - 10);
    this.mGhost.rotateObjPointTo(pl.getXform().getPosition(),0.5);
    this.mGhost.update();
    var stop = pl.isAlive(this.mSpikes,wx,wy,440,this.mGhost);

@@ -62,8 +62,8 @@ Level.prototype._initializeLights = function () {
     this.mGlobalLightSet.addToSet(l);
 
     l = this._createALight(Light.eLightType.eSpotLight,
-            [64, 43, 10],            // Center of camera 
-            [0.0, 0.03, -1],
+            [64, 50, 10],            // Center of camera 
+            [0.03, 0.03, -1],
             [0.8, 0.8, 0.2, 1],      //  color
             100, 100,                   // near and far distances
             1.9, 2.0,                // inner and outer cones
