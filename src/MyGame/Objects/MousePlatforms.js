@@ -18,6 +18,10 @@ MousePlatforms.prototype.update = function(player){
         if(this.mPickups[i].checkColl(player)){
             this.mPickups.splice(i,1);
             this.incPlats();
+            var n = this.mGlobalLightSet.getLightAt(3).getNear();
+            var f = this.mGlobalLightSet.getLightAt(3).getFar();
+            this.mGlobalLightSet.getLightAt(3).setFar(f + 2);
+            this.mGlobalLightSet.getLightAt(3).setNear(n + 2);
             break;
         }
     }
