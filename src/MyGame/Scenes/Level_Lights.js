@@ -31,7 +31,7 @@ Level.prototype._initializeLights = function () {
     var l = this._createALight(Light.eLightType.ePointLight,
             [50, 40, 5],         // PlayerPointLight
             [0, 0, -1],          // Direction 
-            [1.0, .6, 0.1, 1],  // some color
+            [0, .6, 0.1, 1],  // some color
             8, 20,               // near and far distances
             0.1, 0.2,            // inner and outer cones
             2,                   // intensity
