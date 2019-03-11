@@ -8,7 +8,7 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 function LevelFileParser(sceneFilePath) {
-    this.mSceneXml = gEngine.ResourceMap.retrieveAsset(sceneFilePath);
+   this.mSceneXml = gEngine.ResourceMap.retrieveAsset(sceneFilePath);
 }
 
 LevelFileParser.prototype._getElm = function (tagElm) {
@@ -19,7 +19,7 @@ LevelFileParser.prototype._getElm = function (tagElm) {
     return theElm;
 };
 
-LevelFileParser.prototype.parseLevel = function (levelSet) {
+LevelFileParser.prototype.parseLevel = function (levelSet,spikes,pickupArr) {
     var elm = this._getElm("Block");
     var type, i, j, x, y, w, h, r, c, levelObject;
     for (i = 0; i < elm.length; i++) {
@@ -43,7 +43,21 @@ LevelFileParser.prototype.parseLevel = function (levelSet) {
         levelObject.getXform().setPosition(x, y);
         levelObject.getXform().setRotationInDegree(r); // In Degree
         levelObject.getXform().setSize(w, h);
-        levelSet.push(levelObject);
+        if(type===2){
+            //add it to the spike array
+            spikes.push(levelObject);
+        }else if(type===1){
+            var gObj = new GameObject(levelObject);//add renderable to gameObject
+            var rObj = new RigidRectangle(levelObject.getXform(),w,h);
+            rObj.setMass(0);//prevents the platform form moving
+            gObj.setRigidBody(rObj);
+//            gObj.toggleDrawRigidShape();
+            //add it to the platform set
+            levelSet.addToSet(gObj);
+        }else if(type===3){
+            var pick = new PlatformPickup(x,y);
+            pickupArr.push(pick);
+        }
     }
     var worldEnd = this._getElm("EndOfWorld");
     return Number(worldEnd[0].attributes.getNamedItem("value").value);

@@ -9,6 +9,13 @@
 
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
+/**
+ * Implements the pixelTouches() and related supporting functions of TextureRenderable
+ * @class TextureRenderable
+ * @param {TextureRenderable} other to check for collision with
+ * @param {vec2} wcTouchPos world coordinate position of first collision
+ * @returns {Boolean} true if collision is detected
+ */
 TextureRenderable.prototype.pixelTouches = function(other, wcTouchPos) {
     var pixelTouch = false;
     var xIndex = 0, yIndex;
@@ -41,6 +48,11 @@ TextureRenderable.prototype.pixelTouches = function(other, wcTouchPos) {
     return pixelTouch;
 };
 
+/**
+ * Get the color array from the GPU and set it to the renderables Color Array
+ * @memberOf TextureRenderable
+ * @returns {void}
+ */
 TextureRenderable.prototype.setColorArray = function () {
     if (this.mColorArray === null) {
         this.mColorArray = gEngine.Textures.getColorArray(this.mTexture);

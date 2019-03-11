@@ -19,6 +19,10 @@ var gEngine = gEngine || { };
 gEngine.VertexBuffer = (function () {
     // reference to the vertex positions for the different buffers
     var mShapeVertexBuffer = null;
+    
+    // reference to the texture positions for the square vertices in the gl context
+    var mLineVertexBuffer = null;
+    
     // reference to the texture positions for the square vertices in the gl context
     var mTextureCoordBuffer = null;
 
@@ -43,6 +47,12 @@ gEngine.VertexBuffer = (function () {
         0.0, 0.0
     ];
     
+     // this is to support the debugging of physics engine
+    var verticesOfLine = [
+        0.5, 0.5, 0.0,
+        -0.5, -0.5, 0.0
+    ];
+    
     // define enum for different shape types
     var kShapeType = {
          Square: 1,
@@ -53,12 +63,12 @@ gEngine.VertexBuffer = (function () {
     // returns the starting index to use when drawing a specific shape
     var getShapeBufferStart = function (shape) {
         switch(shape) {
-            case kShapeType.Triangle: // first shape in buffer
-                return getShapeVerticesCount(kShapeType.Square);
-                break;
-            case kShapeType.Square: // second shape in buffer
+            case kShapeType.Square: // first shape in buffer
             default:
                 return 0;
+                break;
+            case kShapeType.Triangle: // second shape in buffer
+                return getShapeVerticesCount(kShapeType.Square);
                 break;
         }
     };
@@ -99,10 +109,39 @@ gEngine.VertexBuffer = (function () {
         // Loads verticesOfSquare into the vertexBuffer
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
         // </editor-fold>
+        
+        // <editor-fold desc="Step A: Allocate and store vertex positions into the webGL context">
+        // Create a buffer on the gGL context for our vertex positions
+        mLineVertexBuffer = gl.createBuffer();
+
+        // Connect the vertexBuffer to the ARRAY_BUFFER global gl binding point.
+        gl.bindBuffer(gl.ARRAY_BUFFER, mLineVertexBuffer);
+
+        // Put the verticesOfSquare into the vertexBuffer, as non-changing drawing data (STATIC_DRAW)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesOfLine), gl.STATIC_DRAW);
+        //<editor-fold>
     };
 
+    /**
+     * Return reference to the vertex positions for the square in the gl context
+     * @memberOf gEngine.VertexBuffer
+     * @returns {VertexBuffer}
+     */
     var getGLShapeVertexRef = function () { return mShapeVertexBuffer; };
+    
+    /**
+     * Return reference to the texture positions for the square vertices in the gl context
+     * @memberOf gEngine.VertexBuffer
+     * @returns {CoordinateBuffer}
+     */
     var getGLTexCoordRef = function () { return mTextureCoordBuffer; };
+    
+    /**
+     * Return reference to the texture positions for the square vertices in the gl context
+     * @memberOf gEngine.VertexBuffer
+     * @returns {VertexBuffer}
+     */
+    var getGLLineVertexRef = function () { return mLineVertexBuffer; };
 
     var cleanUp = function () {
         var gl = gEngine.Core.getGL();
@@ -112,7 +151,8 @@ gEngine.VertexBuffer = (function () {
 
     var mPublic = {
         initialize: initialize,
-        getGLShapeVertexRef: getGLShapeVertexRef,
+        getGLVertexRef: getGLShapeVertexRef,
+        getGLLineVertexRef: getGLLineVertexRef,
         getGLTexCoordRef: getGLTexCoordRef,
         getShapeBufferStart: getShapeBufferStart,
         getShapeVerticesCount: getShapeVerticesCount,

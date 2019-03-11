@@ -12,15 +12,23 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 //<editor-fold desc="constructor">
-// constructor of SimpleShader object
+/**
+ * constructor of SimpleShader object.
+ * @class SimpleShader
+ * @param {string} vertexShaderPath filepath of the Vertex Shader.
+ * @param {string} fragmentShaderPath filepath of the Fragment Shader.
+ * @returns {SimpleShader} An intsnace of SimpleShader.
+ */
 function SimpleShader(vertexShaderPath, fragmentShaderPath) {
     // instance variables
     // Convention: all instance variables: mVariables
-    this.mCompiledShader = null;  // reference to the compiled shader in webgl context  
-    this.mShaderVertexPositionAttribute = null; // reference to SquareVertexPosition within the shader
-    this.mPixelColor = null;                    // reference to the pixelColor uniform in the fragment shader
-    this.mModelTransform = null;                // reference to model transform matrix in vertex shader
-    this.mViewProjTransform = null;             // reference to the View/Projection matrix in the vertex shader
+    this.mCompiledShader = null; // reference to the compiled shader in webgl context.
+    this.mShaderVertexPositionAttribute = null; // reference to SquareVertexPosition within the shader.
+    this.mPixelColor = null; // reference to the pixelColor uniform in the fragment shader.
+    this.mModelTransform = null; // reference to model transform matrix in vertex shader.
+    this.mViewProjTransform = null; // reference to the View/Projection matrix in the vertex shader.
+    this.mGlobalAmbientColor = null; // refrence to the globalAmbientColor uniform in the fragment shader.
+    this.mGlobalAmbientIntensity = null; // refrence to the globalAmbientIntensity uniform in the fragment shader.
 
     var gl = gEngine.Core.getGL();
 
@@ -42,7 +50,7 @@ function SimpleShader(vertexShaderPath, fragmentShaderPath) {
         return null;
     }
 
-    // Step D: Gets a reference to the aSquareVertexPosition attribute within the shaders.
+    // Step D: gets a reference to the aSquareVertexPosition attribute within the shaders.
     this.mShaderVertexPositionAttribute = gl.getAttribLocation(
         this.mCompiledShader,
         "aSquareVertexPosition"
@@ -52,21 +60,32 @@ function SimpleShader(vertexShaderPath, fragmentShaderPath) {
     this.mPixelColor = gl.getUniformLocation(this.mCompiledShader, "uPixelColor");
     this.mModelTransform = gl.getUniformLocation(this.mCompiledShader, "uModelTransform");
     this.mViewProjTransform = gl.getUniformLocation(this.mCompiledShader, "uViewProjTransform");
+    this.mGlobalAmbientColor = gl.getUniformLocation(this.mCompiledShader, "uGlobalAmbientColor");
+    this.mGlobalAmbientIntensity = gl.getUniformLocation(this.mCompiledShader, "uGlobalAmbientIntensity");
 }
 //</editor-fold>
 
 // <editor-fold desc="Public Methods">
 
-
-// Access to the compiled shader
+/**
+ * Access to the compiled shader
+ * @memberOf SimpleShader
+ * @returns {WebGLProgram} A reference to the SimpleShaders Shader Program.
+ */
 SimpleShader.prototype.getShader = function () { return this.mCompiledShader; };
 
-// Activate the shader for rendering
+/**
+ * Activate the shader for rendering.
+ * @memberOf SimpleShader
+ * @param {float[]} pixelColor [R, G, B, A] Sets the shader pixel color.
+ * @param {Camera} aCamera Camera to draw to
+ * @returns {void}
+ */
 SimpleShader.prototype.activateShader = function (pixelColor, aCamera) {
     var gl = gEngine.Core.getGL();
     gl.useProgram(this.mCompiledShader);
     gl.uniformMatrix4fv(this.mViewProjTransform, false, aCamera.getVPMatrix());
-    gl.bindBuffer(gl.ARRAY_BUFFER, gEngine.VertexBuffer.getGLShapeVertexRef());
+    gl.bindBuffer(gl.ARRAY_BUFFER, gEngine.VertexBuffer.getGLVertexRef());
     gl.vertexAttribPointer(this.mShaderVertexPositionAttribute,
         3,              // each element is a 3-float (x,y.z)
         gl.FLOAT,       // data type is FLOAT
@@ -75,15 +94,27 @@ SimpleShader.prototype.activateShader = function (pixelColor, aCamera) {
         0);             // offsets to the first element
     gl.enableVertexAttribArray(this.mShaderVertexPositionAttribute);
     gl.uniform4fv(this.mPixelColor, pixelColor);
+    gl.uniform4fv(this.mGlobalAmbientColor, gEngine.DefaultResources.getGlobalAmbientColor());
+    gl.uniform1f(this.mGlobalAmbientIntensity, gEngine.DefaultResources.getGlobalAmbientIntensity());
 };
 
-// Loads per-object model transform to the vertex shader
+/**
+ * Loads per-object model transform to the vertex shader.
+ * @memberOf SimpleShader
+ * @param {float[]} modelTransform An array of float values representing one or more 4x4 matrices.
+ * @returns {void}
+ */
 SimpleShader.prototype.loadObjectTransform = function (modelTransform) {
     var gl = gEngine.Core.getGL();
         // loads the modelTransform matrix into webGL to be used by the vertex shader
     gl.uniformMatrix4fv(this.mModelTransform, false, modelTransform);
 };
 
+/**
+ * Detaches and removes the shader from the Shader Program
+ * @memberOf SimpleShader
+ * @returns {void}
+ */
 SimpleShader.prototype.cleanUp = function () {
     var gl = gEngine.Core.getGL();
     gl.detachShader(this.mCompiledShader, this.mVertexShader);
@@ -100,9 +131,14 @@ SimpleShader.prototype.cleanUp = function () {
 //    naming convention: starts with an "_"
 // **------------------------------------
 
-// 
-// Returns a compiled shader from a shader in the dom.
-// The id is the id of the script in the html tag.
+/**
+ * Returns a compiled shader from a shader in the dom.<p>
+ * The id is the id of the script in the html tag.
+ * @memberOf SimpleShader
+ * @param {string} filePath Filepath of the shader.
+ * @param {Number} shaderType Either gl.FRAGMENT_SHADER or gl.VERTEX_SHADER constants.
+ * @returns {WebGLShader} Shader object of type fragment or vertex shader.
+ */
 SimpleShader.prototype._compileShader = function (filePath, shaderType) {
     var gl = gEngine.Core.getGL();
     var shaderSource = null, compiledShader = null;

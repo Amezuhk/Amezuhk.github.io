@@ -1,21 +1,19 @@
 /*jslint node: true, vars: true */
-/*global gEngine, Scene, GameObjectset, TextureObject, Camera, vec2,
+/*global gEngine, Scene, GameObjectSet, TextureObject, Camera, vec2,
   FontRenderable, SpriteRenderable, LineRenderable,
   GameObject */
 /* find out more about jslint: http://www.jslint.com/help.html */
 "use strict";
 
-function LevelPlatform(renderableSet, worldEnd, camera) {
+function LevelPlatform() {
     this.mCurrentTime = Date.now();
     this.mElapsedTime = 0;
     this.mPreviousTime = this.mCurrentTime;
     
-    this.mEndOfWorld = worldEnd;
-    
-    this.mCamera = camera;
-    
-    this.mLevelRenderableSet = renderableSet;
-    
+    //this.mEndOfWorld = worldEnd;
+    this.mEndOfWorld = null;
+    //this.mCamera = camera;
+    this.mCamera = null;
     this.mIsScrolling = true;
     
     this.mCameraSpeed = 15;
@@ -30,16 +28,30 @@ function LevelPlatform(renderableSet, worldEnd, camera) {
     this.mMsg.setColor([0, 0, 0, 1]);
     this.mMsg.getXform().setPosition(2, 70);
     this.mMsg.setTextHeight(3);
+    GameObjectSet.call(this);
 };
+gEngine.Core.inheritPrototype(LevelPlatform, GameObjectSet);
 
-// The Update function, updates the application state. Make sure to _NOT_ draw
-// anything from this function!
 LevelPlatform.prototype.update = function () {
+    GameObjectSet.prototype.update.call(this);
     if (this.mIsScrolling) {
         this._updateScrollingCamera();
     }
+    var i=1;
+    var pl = this.mSet[0];
+    for(i=1;i<this.mSet.length;i++){
+        var o = this.mSet[i];
+        var ot = o.getRigidBody();
+        var col = new CollisionInfo();
+        var status = pl.getRigidBody().collisionTest(ot,col);
+        if(status){
+            pl.setFall(false);
+            break;
+        }
+    }
+    
 };
-
+LevelPlatform.prototype.stopScroll = function(){this.mIsScrolling=false;};
 LevelPlatform.prototype._updateScrollingCamera = function () {
     var wcCenter = this.mCamera.getWCCenter();
     var msgCenter = this.mMsg.getXform().getPosition();
@@ -58,14 +70,19 @@ LevelPlatform.prototype._updateScrollingCamera = function () {
 };
 
 // this function will only draw the renderables that should be visible.
-LevelPlatform.prototype.drawVisibleRenderables = function () {
+LevelPlatform.prototype.draw = function () {
     var i = this.mLastStarterDrawIndex, l;
     var count = 0;
-    
-    // start drawing at last known visible object
-    for (i; i < this.mLevelRenderableSet.length; i++) {
-        l = this.mLevelRenderableSet[i];
-        if(this._isVisible(l)) {
+    l = this.mSet[0];
+    l.draw(this.mCamera);
+    //this.mMsg.draw(this.mCamera);
+//     start drawing at last known visible object
+    for (i; i < this.mSet.length; i++) {
+        //ignore first object (playerobject)
+        if(i!==0){
+            l = this.mSet[i];
+            var lr = l.getRenderable();
+        if(this._isVisible(lr)) {
             l.draw(this.mCamera);
             this.mIsRendering = true;
             count++;
@@ -75,10 +92,11 @@ LevelPlatform.prototype.drawVisibleRenderables = function () {
             // skip those objects
             this.mLastStarterDrawIndex += 1;
         }
+        }
     }
     this.mIsRendering = false;
     this.mMsg.setText("Renderables drawn: " + count);
-    this.mMsg.draw(this.mCamera);   // only draw status in the main camera
+    //this.mMsg.draw(this.mCamera);   // only draw status in the main camera
     return i;
 };
 
@@ -103,6 +121,8 @@ LevelPlatform.prototype._isVisible = function(object) {
     }
 };
 
-LevelPlatform.prototype.getRenderableSet = function(){
-    return this.mLevelRenderableSet;
-}
+LevelPlatform.prototype.getRenderableSet = function(){return this.mSet;};
+//the set gets initialized before everything so camera and end gets set later
+LevelPlatform.prototype.setCamera = function(aCamera){this.mCamera = aCamera;};
+LevelPlatform.prototype.setWorldEnd = function(worldEnd){this.mEndOfWorld = worldEnd;};
+

@@ -9,10 +9,18 @@
 
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
+/**
+ * Static refrence to gEngine
+ * @type gEngine
+ */
 var gEngine = gEngine || { };
 
-// for convenenit communication of per-character information
-// all size returned are in normalize unit (range between 0 to 1)
+/**
+ * for convenenit communication of per-character information<p>
+ * all size returned are in normalize unit (range between 0 to 1)
+ * @class CharacterInfo
+ * @return {CharacterInfo}
+ */
 function CharacterInfo() {
   // in texture coordinate (0 to 1) maps to the entire image
     this.mTexCoordLeft = 0;
@@ -30,10 +38,17 @@ function CharacterInfo() {
     this.mCharAspectRatio = 1;
 }
 
-// Note: font name is the path to the fnt file. (without the fnt extension!)
-//    You must also provide the image file in the exact same folder
-//    with the exact same name, with ".png" extension.
+/**
+ * Default Constructor<p>
+ * Provides support for loading and unloading of font image and font description<p>
+ * Note: font name is the path to the fnt file. (without the fnt extension!)<p>
+ *    You must also provide the image file in the exact same folder<p>
+ *    with the exact same name, with ".png" extension.
+ * @class gEngine.Fonts
+ * @type {gEngine.Fonts}
+ */
 gEngine.Fonts = (function () {
+    
     var _storeLoadedFont = function (fontInfoSourceString) {
         var fontName = fontInfoSourceString.slice(0, -4);  // trims the .fnt extension
         var fontInfo = gEngine.ResourceMap.retrieveAsset(fontInfoSourceString);
@@ -41,6 +56,12 @@ gEngine.Fonts = (function () {
         gEngine.ResourceMap.asyncLoadCompleted(fontName, fontInfo); // to store the actual font info
     };
 
+    /**
+     * Load font into resource map
+     * @memberOf gEngine.Fonts
+     * @param {String} fontName
+     * @return {void}
+     */
     var loadFont = function (fontName) {
         if (!(gEngine.ResourceMap.isAssetLoaded(fontName))) {
             var fontInfoSourceString = fontName + ".fnt";
@@ -56,8 +77,13 @@ gEngine.Fonts = (function () {
         }
     };
 
-    // Remove the reference to allow associated memory 
-    // be available for subsequent garbage collection
+    /**
+     * Remove the reference to allow associated memory <p>
+     * be available for subsequent garbage collection
+     * @memberOf gEngine.Fonts
+     * @param {String} fontName
+     * @return {void}
+     */
     var unloadFont = function (fontName) {
         gEngine.ResourceMap.unloadAsset(fontName);
         if (!(gEngine.ResourceMap.isAssetLoaded(fontName))) {
@@ -69,6 +95,13 @@ gEngine.Fonts = (function () {
         }
     };
 
+    /**
+     * Get Character Information for a char from a font
+     * @memberOf gEngine.Fonts
+     * @param {String} fontName Font to get information from
+     * @param {Char} aChar Character to get information as
+     * @return {CharacterInfo} Char information
+     */
     var getCharInfo = function (fontName, aChar) {
         var returnInfo = null;
         var fontInfo = gEngine.ResourceMap.retrieveAsset(fontName);

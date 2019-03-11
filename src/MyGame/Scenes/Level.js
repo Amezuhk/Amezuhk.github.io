@@ -1,4 +1,4 @@
-/*jslint node: true, vars: true */
+ /*jslint node: true, vars: true */
 /*global gEngine, Scene, GameObjectset, TextureObject, Camera, vec2,
   FontRenderable, SpriteRenderable, LineRenderable,
   GameObject */
@@ -11,17 +11,19 @@ function Level(sceneFile, bgClip, cue) {
     // audio clips: supports both mp3 and wav formats
     this.kBgClip = bgClip;
     this.kCue = cue;
-    
-    this.mLevelRenderableSet = [];
-    
+    this.mBg = null;
+    this.kBg = "assets/bg.png";
+    //this.mLevelRenderableSet = new GameObjectSet();
+    this.mSpikes = [];
     this.mLevelPlatform = null;
-    this.mPlayer = null;
+    this.mPlayer = 0;//index in the object set of the player object
+    this.mGhost = new Ghost();
     this.kWCWidth = 100;
     this.kWCCenterX = 50;
     this.kWCCenterY = 37.5;
     this.kViewportWidth = 1000;
     this.kViewportHeight = 750;
-    
+    this.mMouse = null;
     this.mCamera = null;   
 }
 gEngine.Core.inheritPrototype(Level, Scene);
@@ -30,7 +32,8 @@ Level.prototype.loadScene = function () {
     // load the scene file
     gEngine.TextFileLoader.loadTextFile(this.kLevelFile, 
         gEngine.TextFileLoader.eTextFileType.eXMLFile);
-
+    gEngine.Textures.loadTexture(this.kBg);
+    
     // loads the audios
     gEngine.AudioClips.loadAudio(this.kBgClip);
     gEngine.AudioClips.loadAudio(this.kCue);
@@ -39,13 +42,13 @@ Level.prototype.loadScene = function () {
 Level.prototype.unloadScene = function () {
     // stop the background audio
     gEngine.AudioClips.stopBackgroundAudio();
-
+    gEngine.Textures.unloadTexture(this.kBg);
     // unload the scene flie and loaded resources
     gEngine.TextFileLoader.unloadTextFile(this.kLevelFile);
     gEngine.AudioClips.unloadAudio(this.kBgClip);
     gEngine.AudioClips.unloadAudio(this.kCue);
     
-    var success = this.mPlayer.getSuccess();
+    var success = this.mLevelPlatform.getObjectAt(this.mPlayer).getSuccess();
     if(!success){
         var nextLevel = new GameOver();
         gEngine.Core.startScene(nextLevel);
@@ -53,7 +56,7 @@ Level.prototype.unloadScene = function () {
         var nextLevel = new Win();
         gEngine.Core.startScene(nextLevel);
     }
-    // TO-DO load game over scene
+
 };
 
 Level.prototype.initialize = function () {
@@ -65,15 +68,38 @@ Level.prototype.initialize = function () {
     );
     this.mCamera.setBackgroundColor([0.5, 0.5, 1, 1]);
             // sets the background to gray
-
-    var levelParser = new LevelFileParser(this.kLevelFile);
-    var endOfWorld = levelParser.parseLevel(this.mLevelRenderableSet);
+    this._initializeLights();   // defined in Level_Lights.js
     
-    this.mLevelPlatform = new LevelPlatform(this.mLevelRenderableSet, endOfWorld,
-        this.mCamera);
-    this.mPlayer = new Player();
+    
+        // the Background
+    var bgR = new LightRenderable(this.kBg);
+    bgR.setElementPixelPositions(0, 1024, 0, 1024);
+    bgR.getXform().setSize(100, 100);
+    bgR.getXform().setPosition(50, 40);
+    //bgR.getMaterial().setSpecular([1, 0, 0, 1]);
+    var i;
+    for (i = 0; i < 4; i++) {
+        bgR.addLight(this.mGlobalLightSet.getLightAt(i));   // all the lights
+    }
+    this.mBg = new GameObject(bgR);
+    
+    
+    this.mLevelPlatform = new LevelPlatform();
+    var pl = new Player();
+    this.mLevelPlatform.addToSet(pl);
+    this.mLevelPlatform.setCamera(this.mCamera);
+    var levelParser = new LevelFileParser(this.kLevelFile);
+    var pickArr = [];
+    var endOfWorld = levelParser.parseLevel(this.mLevelPlatform,this.mSpikes,pickArr);
+    this.mLevelPlatform.setWorldEnd(endOfWorld);
+    
     // now start the bg music ...
     gEngine.AudioClips.playBackgroundAudio(this.kBgClip);
+    this.mMouse = new MousePlatforms(this.mLevelPlatform,this.mCamera);
+    var i;
+    for(i=0;i<pickArr.length;i++){
+        this.mMouse.addPickup(pickArr[i]);
+    }
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -83,18 +109,45 @@ Level.prototype.draw = function () {
     gEngine.Core.clearCanvas([0, 0, 1, 1.0]); // clear to light gray
 
     this.mCamera.setupViewProjection();
-    this.mPlayer.draw(this.mCamera);
-    this.mLevelPlatform.drawVisibleRenderables();
-    
+    this.mBg.draw(this.mCamera);
+    this.mLevelPlatform.draw();
+    var i;
+    for(i=0;i<this.mSpikes.length;i++){
+        this.mSpikes[i].draw(this.mCamera);
+    }
+    this.mGhost.draw(this.mCamera);
+    this.mMouse.draw();
 };
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
 Level.prototype.update = function () {
    this.mLevelPlatform.update();
-   this.mPlayer.update(this.mLevelRenderableSet);
-   var sceneChange= this.mPlayer.getSceneChange();
-   if(sceneChange){
+   
+   gEngine.Physics.processCollision(this.mLevelPlatform,[]);
+
+   var pl = this.mLevelPlatform.getObjectAt(this.mPlayer);
+   var plX = pl.getXform();
+   var wx,wy,wc,w,h;
+   w = this.mCamera.getWCWidth();
+   h = this.mCamera.getWCHeight();
+   wc = this.mCamera.getWCCenter();
+   wx = wc[0]-(w/2);
+   wy = wc[1]-(h/2);
+   this.mBg.getXform().setPosition(wc[0], wc[1]);
+   this.mGlobalLightSet.getLightAt(0).setXPos(plX.getXPos());
+   this.mGlobalLightSet.getLightAt(0).setYPos(plX.getYPos());
+   
+   this.mGlobalLightSet.getLightAt(2).setXPos(450);
+   this.mGhost.rotateObjPointTo(pl.getXform().getPosition(),0.5);
+   this.mGhost.update();
+   var stop = pl.isAlive(this.mSpikes,wx,wy,440,this.mGhost);
+   if(stop){
+       this.mLevelPlatform.stopScroll();
+   }
+   var change = pl.shakeOver();
+   if(change||pl.getSuccess()){
        gEngine.GameLoop.stop();
    }
+   this.mMouse.update(pl);
 };

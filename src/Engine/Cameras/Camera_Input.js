@@ -8,27 +8,52 @@
 /* find out more about jslint: http://www.jslint.com/help.html */
 "use strict";
 
-
-Camera.prototype._mouseDCX = function () {
+/**
+ * Returns mouse X position.
+ * @memberOf Camera
+ * @returns {Number}
+ */
+Camera.prototype.mouseDCX = function () {
     return gEngine.Input.getMousePosX() - this.mViewport[Camera.eViewport.eOrgX];
 };
-Camera.prototype._mouseDCY = function () {
+
+/**
+ * Returns mouse Y position.
+ * @memberOf Camera
+ * @returns {Number}
+ */
+Camera.prototype.mouseDCY = function () {
     return gEngine.Input.getMousePosY() - this.mViewport[Camera.eViewport.eOrgY];
 };
 
+/**
+ * Checks if the mouse position is inside the Camera viewport
+ * @memberOf Camera
+ * @returns {Boolean} true if mouse position is inside viewport
+ */
 Camera.prototype.isMouseInViewport = function () {
-    var dcX = this._mouseDCX();
-    var dcY = this._mouseDCY();
+    var dcX = this.mouseDCX();
+    var dcY = this.mouseDCY();
     return ((dcX >= 0) && (dcX < this.mViewport[Camera.eViewport.eWidth]) &&
             (dcY >= 0) && (dcY < this.mViewport[Camera.eViewport.eHeight]));
 };
 
+/**
+ * Returns the mouse X World Coordinate position
+ * @memberOf Camera
+ * @returns {Number}
+ */
 Camera.prototype.mouseWCX = function () {
     var minWCX = this.getWCCenter()[0] - this.getWCWidth() / 2;
-    return minWCX + (this._mouseDCX() * (this.getWCWidth() / this.mViewport[Camera.eViewport.eWidth]));
+    return minWCX + (this.mouseDCX() * (this.getWCWidth() / this.mViewport[Camera.eViewport.eWidth]));
 };
 
+/**
+ * Returns the mouse Y World Coordinate position
+ * @memberOf Camera
+ * @returns {Number}
+ */
 Camera.prototype.mouseWCY = function () {
     var minWCY = this.getWCCenter()[1] - this.getWCHeight() / 2;
-    return minWCY + (this._mouseDCY() * (this.getWCHeight() / this.mViewport[Camera.eViewport.eHeight]));
+    return minWCY + (this.mouseDCY() * (this.getWCHeight() / this.mViewport[Camera.eViewport.eHeight]));
 };
