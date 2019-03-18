@@ -11,34 +11,52 @@
 
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
+var MenuSelection = {
+        StartLevel: 0,
+        SelectLevel: 1,
+        ViewInstructions:2
+    };
+    
 function MyGame() {
     this.kUIButton = "assets/UI/button.png";
     this.kLevelOneSceneFile = "assets/levels/one.xml";
-    this.kLevelOneBgClip = "assets/sounds/BGClip.mp3";
+    this.kLevelOneBgClip = "assets/sounds/bgMusic.mp3";
     this.kCue = "assets/sounds/BlueLevel_cue.wav";
+    this.kBgImage = "assets/title_bg.png";
+    
+    this.mBg = null;
     // The camera to view the scene
     this.mCamera = null;
-    this.mShapes = new GameObjectSet();
-    this.mPlayer = this.mShapes.size();
-    this.Button1 = null;
-    this.Button2 = null;
+    this.mStartButton = null;
     this.mMsg = null;
-    this.mMouse = null;
-//    this.mSmoke = null;
-    this.ghost = null;
+    this.mInstructionButton = null;
+    this.mChoice = 0;
 }
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 
 MyGame.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.kUIButton);
+    gEngine.Textures.loadTexture(this.kBgImage);
 };
 
 MyGame.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.kUIButton);
-//    var nextLevel = new Level(this.kLevelOneSceneFile, this.kLevelOneBgClip,
-//    this.kCue);
-    var nextLevel = new GameOver();
+    gEngine.Textures.unloadTexture(this.kBgImage);
+    var nextLevel= null;
+    
+    switch(this.mChoice) {
+        case MenuSelection.StartLevel:
+            nextLevel= new Level(this.kLevelOneSceneFile, this.kLevelOneBgClip,this.kCue);
+            break;
+        case MenuSelection.SelectLevel:
+            nextLevel = new LevelSelector();
+            break;
+        case MenuSelection.ViewInstructions:
+        default:
+            nextLevel = new Instructions();
+    }
+    
     gEngine.Core.startScene(nextLevel);
 };
 
@@ -53,27 +71,14 @@ MyGame.prototype.initialize = function () {
             // sets the background to gray
     gEngine.DefaultResources.setGlobalAmbientIntensity(3);
 
-    var g = new Player();
-    this.mShapes.addToSet(g);
+    this.mMsg = new UIText("Brix",[500,650],20,1,0,[1,1,1,1]);
+    this.mStartButton = new UIButton(this.kUIButton,this.startLevel,this,[500,350],[300,100],"Start",8,[1,1,1,1],[0,0,0,1]);
+    this.mSelectLevelButton = new UIButton(this.kUIButton,this.selectLevel,this,[500,250],[475,100],"Select Level",6,[1,1,1,1],[0,0,0,1]);
+    this.mInstructionButton = new UIButton(this.kUIButton,this.viewInstructions,this,[500,150],[475,100],"Instructions",6,[1,1,1,1],[0,0,0,1]);
     
-    var l = new Renderable();
-    l.setColor([0,.5,.5,1]);
-    var xf2 = l.getXform();
-    xf2.setSize(10,2.5);
-    xf2.setPosition(50,20);
-    var g2 = new GameObject(l);
-    var r2 = new RigidRectangle(xf2,10,2.5);
-    r2.setMass(0);
-    g2.setRigidBody(r2);
-    g2.toggleDrawRigidShape();
-    this.mShapes.addToSet(g2);
-    this.mMsg = new UIText("Brix",[500,650],20,1,0,[0,0,0,1]);
-    this.mButton1 = new UIButton(this.kUIButton,this.STUFF1,this,[500,250],[300,100],"Start",8,[1,1,1,1],[0,0,0,1]);
-//    this.mSmoke = new Smoke(30,9,3,-30,3,0,5,0,20,0,1,3);
-    this.ghost = new Ghost();
-    this.mMouse = new MousePlatforms(this.mShapes,this.mCamera);
-    var pick = new PlatformPickup(70,30);
-    this.mMouse.addPickup(pick);
+    this.mBg = new TextureRenderable(this.kBgImage);
+     this.mBg.getXform().setSize(100, 100);
+    this.mBg.getXform().setPosition(50, 40);
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -83,37 +88,30 @@ MyGame.prototype.draw = function () {
     gEngine.Core.clearCanvas([0.9, 0.9, 0.9, 1.0]); // clear to light gray
     
     this.mCamera.setupViewProjection();
-    this.mShapes.draw(this.mCamera);
-    //this.mButton1.draw(this.mCamera);
-    //this.mMsg.draw(this.mCamera);
-    this.ghost.draw(this.mCamera);
-    this.mMouse.draw();
+    this.mBg.draw(this.mCamera);
+    this.mStartButton.draw(this.mCamera);
+    this.mSelectLevelButton.draw(this.mCamera);
+    this.mInstructionButton.draw(this.mCamera);
+    this.mMsg.draw(this.mCamera);
 };
 
 MyGame.prototype.update = function () {
-    this.mShapes.update();    
-    var pl = this.mShapes.getObjectAt(0);
-    //pl.checkFall();
-    var o = this.mShapes.getObjectAt(1);
-    var col = new CollisionInfo();
-    var ot = o.getRigidBody();
-    var status = pl.getRigidBody().collisionTest(ot,col);
-    if(status){
-        pl.setFall(false);
-    }
-    this.mButton1.update();
-    gEngine.Physics.processCollision(this.mShapes,[]);
-    this.ghost.rotateObjPointTo(pl.getXform().getPosition(),1);
-    this.ghost.update();
-    var sp = [];
-    var change = pl.isAlive(sp,0,0,100,this.ghost);
-    change = pl.shakeOver();
-    if(change){
-        gEngine.GameLoop.stop();
-    }
-    this.mMouse.update(pl);
+    this.mStartButton.update();
+    this.mInstructionButton.update();
+    this.mSelectLevelButton.update();
 };
 
-MyGame.prototype.STUFF1 = function(){
-  gEngine.GameLoop.stop();
+MyGame.prototype.startLevel = function(){
+    this.mChoice = MenuSelection.StartLevel;
+    gEngine.GameLoop.stop();
+};
+
+MyGame.prototype.selectLevel = function(){
+    this.mChoice = MenuSelection.SelectLevel;
+    gEngine.GameLoop.stop();
+};
+
+MyGame.prototype.viewInstructions = function(){
+    this.mChoice = MenuSelection.ViewInstructions;
+    gEngine.GameLoop.stop();
 };

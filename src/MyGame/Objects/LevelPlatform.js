@@ -10,13 +10,16 @@ function LevelPlatform() {
     this.mElapsedTime = 0;
     this.mPreviousTime = this.mCurrentTime;
     
-    //this.mEndOfWorld = worldEnd;
+    this.mEndMarkerPos = null;
     this.mEndOfWorld = null;
-    //this.mCamera = camera;
+    this.mPlayerStart = null;
     this.mCamera = null;
+    this.mMiniCamera = null;
     this.mIsScrolling = true;
+    this.mIsGhostEnabled = false;
+    this.mIsLightEnabled = false;
     
-    this.mCameraSpeed = 15;
+    this.mCameraSpeed = 17;
     
     // draw object if it is within x% horizontal distance to the right of the 
     // center of the camera. Example, draw if within 120% distane from cam
@@ -24,7 +27,7 @@ function LevelPlatform() {
     this.mLastStarterDrawIndex = 0;
     this.mIsRendering = false;
     
-     this.mMsg = new FontRenderable("Renderables :");
+    this.mMsg = new FontRenderable("Renderables :");
     this.mMsg.setColor([0, 0, 0, 1]);
     this.mMsg.getXform().setPosition(2, 70);
     this.mMsg.setTextHeight(3);
@@ -49,10 +52,11 @@ LevelPlatform.prototype.update = function () {
             break;
         }
     }
-    
 };
+
 LevelPlatform.prototype.stopScroll = function(){this.mIsScrolling=false;};
 LevelPlatform.prototype._updateScrollingCamera = function () {
+    var wcCenterMini = this.mMiniCamera.getWCCenter();
     var wcCenter = this.mCamera.getWCCenter();
     var msgCenter = this.mMsg.getXform().getPosition();
     
@@ -61,6 +65,8 @@ LevelPlatform.prototype._updateScrollingCamera = function () {
     this.mPreviousTime = this.mCurrentTime;
     
     vec2.scaleAndAdd(wcCenter, wcCenter, [1,0], 
+        ( this.mCameraSpeed * this.mElapsedTime)/1000);
+    vec2.scaleAndAdd(wcCenterMini, wcCenter, [1,0], 
         ( this.mCameraSpeed * this.mElapsedTime)/1000);
     vec2.scaleAndAdd(msgCenter, msgCenter, [1,0], 
         ( this.mCameraSpeed * this.mElapsedTime)/1000);
@@ -122,7 +128,33 @@ LevelPlatform.prototype._isVisible = function(object) {
 };
 
 LevelPlatform.prototype.getRenderableSet = function(){return this.mSet;};
+
 //the set gets initialized before everything so camera and end gets set later
 LevelPlatform.prototype.setCamera = function(aCamera){this.mCamera = aCamera;};
-LevelPlatform.prototype.setWorldEnd = function(worldEnd){this.mEndOfWorld = worldEnd;};
+LevelPlatform.prototype.setMiniCamera = function(aCamera) { this.mMiniCamera = aCamera; };
 
+LevelPlatform.prototype.setWorldEnd = function(worldEnd){this.mEndOfWorld = worldEnd;};
+LevelPlatform.prototype.getWorldEnd = function(){return this.mEndOfWorld;};
+
+LevelPlatform.prototype.setGhostEnabled = function(isEnabled){this.mIsGhostEnabled = isEnabled;};
+LevelPlatform.prototype.isGhostEnabled = function(){return this.mIsGhostEnabled;};
+
+LevelPlatform.prototype.setLightEnabled = function(isEnabled){this.mIsLightEnabled = isEnabled;};
+LevelPlatform.prototype.isLightEnabled = function(){return this.mIsLightEnabled;};
+
+LevelPlatform.prototype.setPlayerStart = function(pos){this.mPlayerStart = pos;};
+LevelPlatform.prototype.getPlayerStart = function(){return this.mPlayerStart;};
+
+LevelPlatform.prototype.setEndMarkerPosition = function (pos) {
+    this.mEndMarkerPos = pos;
+};
+LevelPlatform.prototype.getEndMarkerPosition = function () {
+    return this.mEndMarkerPos;
+};
+
+LevelPlatform.prototype.drawAll = function(cam){
+    var i;
+    for(i=0;i<this.mSet.length;i++){
+        this.mSet[i].draw(cam);
+    }
+};

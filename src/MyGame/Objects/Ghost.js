@@ -6,8 +6,10 @@ function Ghost(){
     this.mGhost = new Renderable();
     this.mGhost.setColor([0.5,0.5,0.5,1]);
     this.mGhost.getXform().setSize(5,5);
-    this.mGhost.getXform().setPosition(0,0);
+    this.mGhost.getXform().setPosition(3,60);
     this.mSpeed = .3;
+    this.mBurstTime = Date.now();
+    this.mIsBurst = false;
     this.mCurrentFrontDir = vec2.fromValues(0,1);
     
     this.mSmoke = new Smoke(0,0,3,-40,2,-40,0,0,20,0,1,5);
@@ -68,6 +70,19 @@ Ghost.prototype.rotateObjPointTo = function (p, rate) {
 
 Ghost.prototype.update = function () {
     // simple default behavior
+//    if(this.mIsBurst){
+//        if((Date.now()-this.mBurstTime)>=1000){
+//            this.mIsBurst = false;
+//            this.mBurstTime = Date.now();
+//        }
+//        this.mSpeed = 0.6;
+//    }else{
+//        if((Date.now()-this.mBurstTime)>=1500){
+//            this.mIsBurst = true;
+//            this.mBurstTime = Date.now();
+//        }
+//        this.mSpeed = 0.05;
+//    }
     var pos = this.getXform().getPosition();
     vec2.scaleAndAdd(pos, pos, this.getCurrentFrontDir(), this.getSpeed());
     gEngine.ParticleSystem.update(this.mSmoke);

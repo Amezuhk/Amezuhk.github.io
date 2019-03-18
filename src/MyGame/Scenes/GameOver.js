@@ -1,14 +1,14 @@
-/* global gEngine, Scene, MyGame, vec2 */
+/* global gEngine, Scene, vec2 */
 
-function GameOver(){
+function GameOver(sceneFile){
     this.mMsg = null;
     this.mRetry = null;
     this.mYes = null;
     this.mNo = null;
     this.mCamera = null;
     this.mChoice = false;
-    this.kLevelOneSceneFile = "assets/levels/one.xml";
-    this.kLevelOneBgClip = "assets/sounds/BGClip.mp3";
+    this.kLevelSceneFile = sceneFile;
+    this.kLevelOneBgClip = "assets/sounds/bgMusic.mp3";
     this.kCue = "assets/sounds/BlueLevel_cue.wav";
     this.kUIButton = "assets/UI/button.png";
 }
@@ -21,11 +21,12 @@ GameOver.prototype.loadScene = function(){
 
 GameOver.prototype.unloadScene = function(){
     gEngine.Textures.unloadTexture(this.kUIButton);
+    var nextLevel = null;
     if(this.mChoice){
-        var nextLevel = new Level(this.kLevelOneSceneFile, this.kLevelOneBgClip,
+        nextLevel = new Level(this.kLevelSceneFile, this.kLevelOneBgClip,
         this.kCue);
     }else{
-        var nextLevel = new MyGame();
+        nextLevel = new MyGame();
     }
     gEngine.Core.startScene(nextLevel);
 };
@@ -65,4 +66,4 @@ GameOver.prototype.PLAYAGAIN = function(){
 
 GameOver.prototype.STARTSCREEN = function(){
     gEngine.GameLoop.stop();
-}
+};

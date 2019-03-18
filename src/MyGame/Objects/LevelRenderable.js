@@ -3,18 +3,18 @@
  * Object that makes up a level.(block, spikes, collectable, etc..)
  */
 /*jslint node: true, vars: true */
-/*global gEngine: false, console: false, Renderable: false, vec2: false, Transform: false */
+/*global gEngine: false, console: false, LightRenderable: false, vec2: false, Transform: false */
 /* find out more about jslint: http://www.jslint.com/help.html */
 
-function LevelRenderable() {
+function LevelRenderable(texture) {
     // the following are used to determine whether we should 
     // render this
     this.mLeftEdge = null;
     this.mRightEdge = null;
     
-    Renderable.call(this);
+    LightRenderable.call(this, texture);
 }
-gEngine.Core.inheritPrototype(LevelRenderable, Renderable);
+gEngine.Core.inheritPrototype(LevelRenderable, LightRenderable);
 
 LevelRenderable.prototype.draw = function (aCamera) {
     
@@ -22,9 +22,10 @@ LevelRenderable.prototype.draw = function (aCamera) {
     this.mShader.activateShader(this.mColor, aCamera);  // always activate the shader first!
     this.mShader.loadObjectTransform(this.mXform.getXform());
     
-    var start = gEngine.VertexBuffer.getShapeBufferStart(this.mShapeType);
-    var count = gEngine.VertexBuffer.getShapeVerticesCount(this.mShapeType);
-    gl.drawArrays(gl.TRIANGLE_STRIP, start, count); 
+//    var start = gEngine.VertexBuffer.getShapeBufferStart(this.mShapeType);
+//    var count = gEngine.VertexBuffer.getShapeVerticesCount(this.mShapeType);
+//    gl.drawArrays(gl.TRIANGLE_STRIP, start, count); 
+    LightRenderable.prototype.draw.call(this, aCamera);
 };
 
 LevelRenderable.prototype.setType = function (type) { 

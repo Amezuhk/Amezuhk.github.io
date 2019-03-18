@@ -5,11 +5,13 @@
 function MousePlatforms(set,camera){
     this.mPlatSet = set;
     this.mCamera = camera;
+    this.kPlatformTexture = "assets/RigidShape/Wood.png";
     this.mWidth = 10;
     this.mHeight = 6;
-    this.mPlatformsLeft = 3;
+    this.mPlatformsLeft = 0;
     this.mPickups = [];
-    this.mMsg = new UIText("Platforms Left: "+this.mPlatformsLeft,[180,750],3.5,1,0,[0,0,0,1]);
+    this.kPickupSound = "assets/sounds/PickupSound.wav";
+    this.mMsg = new UIText("Platforms Left: "+this.mPlatformsLeft,[180,750],3.5,1,0,[1,1,1,1]);
 }
 
 MousePlatforms.prototype.update = function(player){
@@ -18,6 +20,7 @@ MousePlatforms.prototype.update = function(player){
         if(this.mPickups[i].checkColl(player)){
             this.mPickups.splice(i,1);
             this.incPlats();
+            gEngine.AudioClips.playACue(this.kPickupSound);
             break;
         }
     }
@@ -26,8 +29,8 @@ MousePlatforms.prototype.update = function(player){
             if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)){
                 var x = this.mCamera.mouseWCX();
                 var y = this.mCamera.mouseWCY();
-                var r = new LevelRenderable(1);
-                r.setColor([0.9,0.8,0.8,1]);
+                var r = new LevelRenderable(this.kPlatformTexture);
+                r.setColor([0.9,0.8,0.8,0]);
                 var xF = r.getXform();
                 xF.setSize(this.mWidth,this.mHeight);
                 xF.setPosition(x,y);
