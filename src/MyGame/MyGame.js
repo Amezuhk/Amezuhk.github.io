@@ -20,7 +20,7 @@ var MenuSelection = {
 function MyGame() {
     this.kUIButton = "assets/UI/button.png";
     this.kLevelOneSceneFile = "assets/levels/one.xml";
-    this.kLevelOneBgClip = "assets/sounds/bgMusic.mp3";
+    this.kLevelOneBgClip = "assets/sounds/BgMusic.mp3";
     this.kCue = "assets/sounds/BlueLevel_cue.wav";
     this.kBgImage = "assets/title_bg.png";
     

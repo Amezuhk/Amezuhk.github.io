@@ -5,7 +5,7 @@ function LevelSelector(){
     this.kLevelOneSceneFile = "assets/levels/one.xml";
     this.kLevelTwoSceneFile = "assets/levels/two.xml";
     this.kLevelThreeSceneFile = "assets/levels/three.xml";
-    this.kLevelBgClip = "assets/sounds/bgMusic.mp3";
+    this.kLevelBgClip = "assets/sounds/BgMusic.mp3";
     this.kCue = "assets/sounds/BlueLevel_cue.wav";
     
     this.mCurrentLevel = 2;

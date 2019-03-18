@@ -8,7 +8,7 @@ function GameOver(sceneFile){
     this.mCamera = null;
     this.mChoice = false;
     this.kLevelSceneFile = sceneFile;
-    this.kLevelOneBgClip = "assets/sounds/bgMusic.mp3";
+    this.kLevelOneBgClip = "assets/sounds/BgMusic.mp3";
     this.kCue = "assets/sounds/BlueLevel_cue.wav";
     this.kUIButton = "assets/UI/button.png";
 }
