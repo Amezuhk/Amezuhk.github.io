@@ -7,7 +7,7 @@ function Ghost(){
     this.mGhost.setColor([0.5,0.5,0.5,1]);
     this.mGhost.getXform().setSize(5,5);
     this.mGhost.getXform().setPosition(3,60);
-    this.mSpeed = .3;
+    this.mSpeed = .35;
     this.mBurstTime = Date.now();
     this.mIsBurst = false;
     this.mCurrentFrontDir = vec2.fromValues(0,1);
