@@ -1,0 +1,13 @@
+{
+"companyName": "DefaultCompany",
+"productName": "Playground Challenge 2",
+"dataUrl": "TeamAlpha3_PlaygroundGame.data.unityweb",
+"asmCodeUrl": "TeamAlpha3_PlaygroundGame.asm.code.unityweb",
+"asmMemoryUrl": "TeamAlpha3_PlaygroundGame.asm.memory.unityweb",
+"asmFrameworkUrl": "TeamAlpha3_PlaygroundGame.asm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#292728"
+}
