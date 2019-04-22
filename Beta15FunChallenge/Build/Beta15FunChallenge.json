@@ -1,0 +1,13 @@
+{
+"companyName": "DefaultCompany",
+"productName": "FunChallenge",
+"dataUrl": "Beta15FunChallenge.data.unityweb",
+"asmCodeUrl": "Beta15FunChallenge.asm.code.unityweb",
+"asmMemoryUrl": "Beta15FunChallenge.asm.memory.unityweb",
+"asmFrameworkUrl": "Beta15FunChallenge.asm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#292728"
+}
